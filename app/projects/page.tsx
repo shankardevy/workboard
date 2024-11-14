@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { camelCase } from "change-case/keys";
 
 import {
@@ -12,25 +14,17 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import withAuth from "@/components/hoc/withAuth";
+import { useAuthStore } from "@/stores/authStore";
 
-export default function ProjectDashboard() {
+function ProjectDashboard() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const router = useRouter();
+  // Retrieve the token from localStorage
+  const token = useAuthStore((state) => state.token);
 
   useEffect(() => {
-    // Retrieve the token from localStorage
-    const token = localStorage.getItem("token");
-
-    // If no token, redirect to login
-    if (!token) {
-      router.push("/");
-      return;
-    }
-
     // Fetch the list of projects from the API with Authorization header
     fetch("http://localhost:4000/projects", {
       headers: {
@@ -93,3 +87,5 @@ export default function ProjectDashboard() {
     </div>
   );
 }
+
+export default withAuth(ProjectDashboard);

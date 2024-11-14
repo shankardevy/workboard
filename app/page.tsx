@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const login = useAuthStore((state) => state.login);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token); // Store token
+      login(data.token); // Store token and set the store as authenticated
       router.push("/projects"); // Redirect to projects page on success
     } catch (err) {
       if (err instanceof Error) {

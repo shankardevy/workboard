@@ -13,24 +13,20 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
+import withAuth from "@/components/hoc/withAuth";
 
-export default function ProjectDetail() {
+function ProjectDetail() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
   const { id } = useParams();
+  // Retrieve the token from localStorage
+  const token = useAuthStore((state) => state.token);
+  console.log(token);
 
   useEffect(() => {
-    // Retrieve the token from localStorage
-    const token = localStorage.getItem("token");
-
-    // If no token, redirect to login
-    if (!token) {
-      router.push("/");
-      return;
-    }
-
     // Fetch the list of projects from the API with Authorization header
     fetch(`http://localhost:4000/projects/${id}`, {
       headers: {
@@ -126,3 +122,5 @@ export default function ProjectDetail() {
     </Card>
   );
 }
+
+export default withAuth(ProjectDetail);
