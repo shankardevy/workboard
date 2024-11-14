@@ -1,5 +1,8 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+import { camelCase } from "change-case/keys";
+
 import {
   Card,
   CardHeader,
@@ -11,22 +14,38 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
-const projects = [
-  {
-    id: "1",
-    title: "Redesign Marketing Website",
-    description:
-      "A project focused on updating the marketing website with a modern design.",
-    status: "Active",
-    progress: 45,
-    dueDate: "2024-12-01",
-    priority: "High",
-    team: ["Alice", "Bob"],
-    tags: ["Design", "Marketing"],
-  },
-];
-
 export default function ProjectDashboard() {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Fetch the list of projects from the API
+    fetch("http://localhost:4000/projects")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch projects.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setProjects(data.map((project) => camelCase(project)));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <p>Loading projects...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {projects.map((project) => (
