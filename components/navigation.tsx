@@ -1,17 +1,14 @@
-// components/Navigation.tsx
-
 "use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// components/Navbar.tsx
 export default function Navbar() {
   const router = useRouter();
 
   const handleLogout = () => {
-    // Add your logout logic here
-    console.log("User logged out");
+    localStorage.removeItem("token");
+
     router.push("/");
   };
   return (
