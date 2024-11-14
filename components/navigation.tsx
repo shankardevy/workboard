@@ -15,7 +15,7 @@ export default function Navbar() {
     router.push("/");
   };
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-md">
+    <nav className="mb-10 bg-white border-b border-gray-200 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo and Left Menu Item */}
