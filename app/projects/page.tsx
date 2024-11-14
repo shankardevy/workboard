@@ -13,15 +13,23 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProjectDashboard() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     // Retrieve the token from localStorage
     const token = localStorage.getItem("token");
+
+    // If no token, redirect to login
+    if (!token) {
+      router.push("/");
+      return;
+    }
 
     // Fetch the list of projects from the API with Authorization header
     fetch("http://localhost:4000/projects", {

@@ -25,6 +25,12 @@ export default function ProjectDetail() {
     // Retrieve the token from localStorage
     const token = localStorage.getItem("token");
 
+    // If no token, redirect to login
+    if (!token) {
+      router.push("/");
+      return;
+    }
+
     // Fetch the list of projects from the API with Authorization header
     fetch(`http://localhost:4000/projects/${id}`, {
       headers: {
