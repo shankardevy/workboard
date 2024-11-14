@@ -2,6 +2,8 @@
 
 WorkBoard is an app for learning Next.js. In this app, we are implementing the following features:
 
+Nextjs is a pure frontend app with backend powered by Phoenix api.
+
 1. Login form on the homepage
 2. Navbar with Logo, Dashboard link, Logout link
 3. Protect all pages except homepage from viewing as anonymous user
