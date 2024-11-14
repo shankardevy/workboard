@@ -22,7 +22,16 @@ export default function ProjectDetail() {
   const { id } = useParams();
 
   useEffect(() => {
-    fetch(`http://localhost:4000/projects/${id}`)
+    // Retrieve the token from localStorage
+    const token = localStorage.getItem("token");
+
+    // Fetch the list of projects from the API with Authorization header
+    fetch(`http://localhost:4000/projects/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch project details.");
