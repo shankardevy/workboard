@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { camelCase } from "change-case/keys";
+import Link from "next/link";
 
 import {
   Card,
@@ -12,42 +13,22 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRouter, useParams } from "next/navigation";
-import { useAuthStore } from "@/stores/authStore";
+import { useParams } from "next/navigation";
 import withAuth from "@/components/hoc/withAuth";
+import { fetchProjectById } from "@/services/projects";
 
 function ProjectDetail() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const router = useRouter();
   const { id } = useParams();
-  // Retrieve the token from localStorage
-  const token = useAuthStore((state) => state.token);
-  console.log(token);
 
   useEffect(() => {
     // Fetch the list of projects from the API with Authorization header
-    fetch(`http://localhost:4000/projects/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch project details.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setProject(camelCase(data, 3));
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
+    fetchProjectById(id)
+      .then((data) => setProject(camelCase(data, 3)))
+      .catch((error) => setError("Failed to load project"))
+      .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) {
@@ -117,7 +98,7 @@ function ProjectDetail() {
         </ul>
       </CardContent>
       <CardFooter>
-        <Button onClick={() => router.back()}>Back to Projects</Button>
+        <Link href={`/projects`}>Back to Projects</Link>
       </CardFooter>
     </Card>
   );
