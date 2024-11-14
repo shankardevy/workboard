@@ -1,5 +1,8 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+import { camelCase } from "change-case/keys";
+
 import {
   Card,
   CardHeader,
@@ -9,43 +12,44 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-
-const project = {
-  id: "1",
-  title: "Redesign Marketing Website",
-  description:
-    "This project aims to enhance the design of the marketing website to improve user experience and brand alignment.",
-  status: "In Progress",
-  progress: 45,
-  createdDate: "2024-09-15",
-  dueDate: "2024-12-01",
-  priority: "High",
-  team: [
-    { name: "Alice", role: "Designer" },
-    { name: "Bob", role: "Developer" },
-  ],
-  milestones: [
-    { title: "Wireframe Approval", dueDate: "2024-10-01", status: "Completed" },
-    { title: "Prototype Review", dueDate: "2024-11-01", status: "In Progress" },
-  ],
-  tasks: [
-    { taskName: "Initial Wireframe", status: "Completed" },
-    { taskName: "Prototype Design", status: "In Progress" },
-    { taskName: "Final UI Implementation", status: "Pending" },
-  ],
-  comments: [
-    {
-      user: "Alice",
-      comment: "Wireframe approved by the team.",
-      date: "2024-10-01",
-    },
-    { user: "Bob", comment: "Working on the prototype.", date: "2024-10-15" },
-  ],
-};
+import { useRouter, useParams } from "next/navigation";
 
 export default function ProjectDetail() {
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
+  const { id } = useParams();
+
+  useEffect(() => {
+    fetch(`http://localhost:4000/projects/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch project details.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setProject(camelCase(data, 3));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <p>Loading project details...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (!project) {
+    return <p>Project not found.</p>;
+  }
 
   return (
     <Card className="max-w-2xl p-4">
@@ -65,8 +69,8 @@ export default function ProjectDetail() {
 
         <h3 className="mt-4 font-semibold">Milestones</h3>
         <ul>
-          {project.milestones.map((milestone) => (
-            <li key={milestone.title} className="mb-2">
+          {project.milestones.map((milestone, index) => (
+            <li key={index} className="mb-2">
               {milestone.title} - Due: {milestone.dueDate} -{" "}
               <Badge>{milestone.status}</Badge>
             </li>
@@ -75,8 +79,8 @@ export default function ProjectDetail() {
 
         <h3 className="mt-4 font-semibold">Tasks</h3>
         <ul>
-          {project.tasks.map((task) => (
-            <li key={task.taskName} className="mb-1">
+          {project.tasks.map((task, index) => (
+            <li key={index} className="mb-1">
               {task.taskName} - <Badge variant="outline">{task.status}</Badge>
             </li>
           ))}
@@ -84,8 +88,8 @@ export default function ProjectDetail() {
 
         <h3 className="mt-4 font-semibold">Team</h3>
         <ul>
-          {project.team.map((member) => (
-            <li key={member.name}>
+          {project.team.map((member, index) => (
+            <li key={index}>
               {member.name} - {member.role}
             </li>
           ))}
